@@ -25,28 +25,32 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **kwargs):
-        # username = kwargs["username"]
-        # ipdb.set_trace()
-        username = "admin"
-        password = "admin1234"
-        email = "admin@example.com"
+        if kwargs["username"]:
+            username = kwargs["username"]
+        else:
+            username = "admin"
 
-        find_email = User.objects.get(email=email)
-        find_username = User.objects.get(username=username)
-        """
-        Verificar pq que cai nos dois erros juntos...
-        """
-        if find_username:
-            raise CommandError("Username `%s` already taken." % username)
-        elif find_email:
-            # ipdb.set_trace()
-            raise CommandError("Email `%s` already taken." % email)
+        if kwargs["email"]:
+            email = kwargs["email"]
+        else:
+            email = "admin@example.com"
 
-        User.objects.create_superuser(
-            username=username,
-            password=password,
-            email=email,
-        )
-        self.stdout.write(
-            self.style.SUCCESS("Admin `%s` successfully created!" % username)
-        )
+        if kwargs["password"]:
+            password = kwargs["password"]
+        else:
+            password = "admin1234"
+        try:
+            find_user = User.objects.get(email=email)
+            if username == find_user.username:
+                raise CommandError("Username `%s` already taken." % username)
+            if find_user:
+                raise CommandError("Email `%s` already taken." % email)
+        except User.DoesNotExist:
+            User.objects.create_superuser(
+                username=username,
+                password=password,
+                email=email,
+            )
+            self.stdout.write(
+                self.style.SUCCESS("Admin `%s` successfully created!" % username)
+            )
