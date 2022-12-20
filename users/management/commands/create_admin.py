@@ -1,13 +1,11 @@
 from users.models import User
 from django.core.management.base import BaseCommand, CommandError
-import ipdb
 
 
 class Command(BaseCommand):
     help = "Create admin"
 
     def add_arguments(self, parser):
-        # Optional argument
         parser.add_argument(
             "--email",
             type=str,
@@ -39,6 +37,7 @@ class Command(BaseCommand):
             password = kwargs["password"]
         else:
             password = "admin1234"
+
         try:
             find_user = User.objects.get(email=email)
             if username == find_user.username:
@@ -51,6 +50,7 @@ class Command(BaseCommand):
                 password=password,
                 email=email,
             )
+
             self.stdout.write(
                 self.style.SUCCESS("Admin `%s` successfully created!" % username)
             )
