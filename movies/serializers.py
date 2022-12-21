@@ -1,10 +1,13 @@
 from rest_framework import serializers
 from genres.models import Genre
+from genres.serializers import GenreSerializer
 from movies.models import Movie
 import ipdb
 
 
 class MovieSerializer(serializers.ModelSerializer):
+    genres = GenreSerializer(many=True)
+
     class Meta:
         model = Movie
         fields = [
@@ -12,21 +15,15 @@ class MovieSerializer(serializers.ModelSerializer):
             "title",
             "duration",
             "premiere",
-            "overview",
             "budget",
+            "overview",
             "genres",
         ]
 
-    # def create(self, validated_data):
-    #     ipdb.set_trace()
-    #     genres_list = validated_data.pop("genres")
-    #     movie = Movie.objects.create(**validated_data)
-    #     for genre in genres_list:
-    #         genre_obj = Genre.objects.get_or_create(**genre)[0]
-    #         movie.genres.add(genre_obj)
-    #     return Movie.objects.create(**validated_data)
-
-    # def perform_create(self, serializer):
-    #     print()
-    #     ipdb.set_trace()
-    #     serializer.save(user=self.request.user)
+    def create(self, validated_data):
+        genres_list = validated_data.pop("genres")
+        movie = Movie.objects.create(**validated_data)
+        for genre in genres_list:
+            genre_obj = Genre.objects.get_or_create(**genre)[0]
+            movie.genres.add(genre_obj)
+        return movie

@@ -7,3 +7,14 @@ class GetUserPermissions(permissions.BasePermission):
         if request.user.is_superuser:
             return True
         return False
+
+
+class CreateMoviePermissions(permissions.BasePermission):
+    def has_permission(self, request: Request, view: View):
+        if request.user.is_superuser:
+            return True
+
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return request.user.is_authenticated and request.user.is_superuser

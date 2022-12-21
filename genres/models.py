@@ -9,3 +9,6 @@ class Genre(models.Model):
         editable=False,
     )
     name = models.CharField(max_length=127)
+
+    # def __repr__(self):
+    #     return f"<id: {self.id}, name: {self.name}>"

@@ -6,7 +6,10 @@ from genres.models import Genre
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
-        fields = "__all__"
+        fields = [
+            "id",
+            "name",
+        ]
 
     def create(self, validated_data):
         return Genre.objects.create(**validated_data)
