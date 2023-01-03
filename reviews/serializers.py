@@ -1,13 +1,10 @@
 from rest_framework import serializers
-from movies.models import Movie
 from reviews.models import Review
-import ipdb
-from users.serializers import UserSerializer
-from django.shortcuts import get_object_or_404
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    critic = UserSerializer(many=True, required=False)
+    movie_id = serializers.SerializerMethodField()
+    critic = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
@@ -19,9 +16,14 @@ class ReviewSerializer(serializers.ModelSerializer):
             "movie_id",
             "critic",
         ]
-        # read_only_fields = ["critic"]
 
-    def create(self, validated_data):
-        # ipdb.set_trace()
-        movie = get_object_or_404(Movie, id=self.request.user.pk)
-        return super().create(validated_data)
+    def get_movie_id(self, obj: Review):
+        return obj.movie.pk
+
+    def get_critic(self, obj: Review):
+        critic = {
+            "id": obj.critic.pk,
+            "first_name": obj.critic.first_name,
+            "last_name": obj.critic.last_name,
+        }
+        return critic
